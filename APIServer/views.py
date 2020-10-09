@@ -1,10 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import generics
-from rest_framework.views import APIView
-from rest_framework.response import Response
 
 from .models import Forum, Thread, Message
-from .serializers import UserSerializer, ForumSerializer, ThreadSerializer, MessageSerializer
+from .serializers import UserSerializer, ForumSerializer, ForumSpecificSerializer, ThreadSerializer, ThreadSpecificSerializer, MessageSerializer
 
 CustomUser = get_user_model()
 
@@ -24,44 +22,54 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 ## Forum API
 
 class ForumCreation(generics.CreateAPIView):
+    """
+    Create a new Forum
+    """
     serializer_class = ForumSerializer
 
 class ForumList(generics.ListAPIView):
+    """
+    List all Forum
+    """
     queryset = Forum.objects.all()
     serializer_class = ForumSerializer
 
+class ForumSpecific(generics.RetrieveAPIView):
+    """
+    View a specific forum and provide all threads (See all threads in specific course)
+    """
+    queryset = Forum.objects.all()
+    serializer_class = ForumSpecificSerializer
 
 ## Thread API
 
 class ThreadCreation(generics.CreateAPIView):
+    """
+    Create a new Thread
+    """
     serializer_class = ThreadSerializer
 
 class ThreadList(generics.ListAPIView):
+    """
+    List all Thread - seems not needed ? can be removed later
+    """
     queryset = Thread.objects.all()
     serializer_class = ThreadSerializer
 
-    # def get_queryset(self, *args, **kwargs):
-    #     threads = Thread.objects.filter(forum__id=self.kwargs.get('pk'))
-    #     print(threads.values())
-    #     serializer = ThreadSerializer(threads)
-    #     return Response(serializer.data)
-
-# class ThreadList(APIView):
-#     def get(self, request, format=None):
-#         pk = self.kwargs.get('pk')
-#         threads = Thread.objects.filter(forum__id=pk)
-#         return Response(threads)
-
-
-## Is this needed ?
 class ThreadSpecific(generics.RetrieveAPIView):
+    """
+    View a specific thread (also provide all messages in that thread) - See specific thread
+    """
     queryset = Thread.objects.all()
-    serializer_class = ThreadSerializer
+    serializer_class = ThreadSpecificSerializer
 
 
 ## Message (comment / reply) API
 
 class MessageCreation(generics.CreateAPIView):
+    """
+    Create a message reply in a thread (ordered by Date Posted)
+    """
     serializer_class = MessageSerializer
 
 
