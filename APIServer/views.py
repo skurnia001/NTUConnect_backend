@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import generics
 
 from .models import Forum, Thread, Message
-from .serializers import UserSerializer, ForumSerializer, ForumSpecificSerializer, ThreadSerializer, ThreadSpecificSerializer, MessageSerializer
+from .serializers import UserSerializer, ForumSerializer, ForumSpecificSerializer, ThreadSerializer, ThreadSpecificSerializer, MessageSerializer, MessageSolvedSerializer
 
 CustomUser = get_user_model()
 
@@ -71,5 +71,13 @@ class MessageCreation(generics.CreateAPIView):
     Create a message reply in a thread (ordered by Date Posted)
     """
     serializer_class = MessageSerializer
+
+class MessageIsSolved(generics.RetrieveUpdateAPIView):
+    """
+    Mark a message (reply) as correct - also update the corresponding thread
+    """
+    queryset = Message.objects.all()
+    serializer_class = MessageSolvedSerializer
+
 
 

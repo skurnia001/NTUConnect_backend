@@ -10,7 +10,8 @@ from .views import (
     ThreadCreation,
     ThreadList,
     ThreadSpecific,
-    MessageCreation
+    MessageCreation,
+    MessageIsSolved,
 )
 
 urlpatterns = [
@@ -23,4 +24,5 @@ urlpatterns = [
     path('threadlist/', ThreadList.as_view()),
     path('threadspec/<int:pk>/', ThreadSpecific.as_view()),
     path('createmessages/', MessageCreation.as_view()),
+    path('solvedmessage/<int:pk>', MessageIsSolved.as_view()),
 ]
