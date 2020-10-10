@@ -12,42 +12,49 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ForumSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Forum
-        fields = ['course_code', 'course_title', 'creator']
-
-class ForumSpecificSerializer(serializers.ModelSerializer):
-    threads = serializers.SerializerMethodField('get_all_threads')
-    class Meta:
-        model = Forum
-        fields = ['course_code', 'course_title', 'creator', 'threads']
-
-    def get_all_threads(self, forum):
-        threads = Thread.objects.filter(forum=forum).values('title', 'description', 'solved', 'date_posted', 'forum', 'creator')
-        threads = list(threads)
-        return threads
+        fields = ['id', 'course_code', 'course_title', 'creator']
 
 class ThreadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Thread
-        fields = ['title', 'solved', 'description', 'date_posted', 'creator', 'forum']
+        fields = ['id', 'title', 'solved', 'description', 'date_posted', 'creator', 'forum']
 
-class ThreadSpecificSerializer(serializers.ModelSerializer):
-    full_messages = serializers.SerializerMethodField('get_full_messages')
+class ForumSpecificSerializer(serializers.ModelSerializer):
+    threads = ThreadSerializer(many = True)
 
     class Meta:
-        model = Thread
-        fields = ['title', 'solved', 'description', 'date_posted', 'creator', 'forum', 'full_messages']
-
-    def get_full_messages(self, thread):
-        messages = Message.objects.filter(thread=thread).values('content', 'creator', 'thread', 'upvote', 'is_correct', 'date_posted')
-        messages = list(messages)
-        return messages
-
+        model = Forum
+        fields = ['id', 'course_code', 'course_title', 'creator', 'threads']
 
 class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = ['content', 'thread', 'upvote', 'is_correct', 'date_posted', 'creator', 'date_posted']
+        fields = ['id', 'content', 'thread', 'upvote', 'is_correct', 'date_posted', 'creator', 'date_posted']
+
+
+class ThreadSpecificSerializer(serializers.ModelSerializer):
+    messages = MessageSerializer(many = True)
+
+    class Meta:
+        model = Thread
+        fields = ['id', 'title', 'solved', 'description', 'date_posted', 'creator', 'forum', 'messages']
+
+
+class MessageSolvedSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Message
+        fields = ['id', 'content', 'thread', 'upvote', 'is_correct', 'date_posted', 'creator', 'date_posted']
+
+    def update(self, instance, validated_data):
+        message_status_update = validated_data.get('is_correct', instance.is_correct)
+        instance.is_correct = message_status_update
+        instance.thread.solved = message_status_update
+        instance.save()
+        instance.thread.save()
+        return instance
