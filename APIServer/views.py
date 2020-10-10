@@ -51,7 +51,7 @@ class ThreadCreation(generics.CreateAPIView):
 
 class ThreadList(generics.ListAPIView):
     """
-    List all Thread - seems not needed ? can be removed later
+    List all Thread
     """
     queryset = Thread.objects.all()
     serializer_class = ThreadSerializer
