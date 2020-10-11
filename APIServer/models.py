@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.utils.text import Truncator
+# from django.utils.text import Truncator
 
 from datetime import datetime
 
@@ -14,7 +14,6 @@ class Forum(models.Model):
     course_code = models.CharField(max_length=20)
     course_title = models.CharField(max_length=100)
 
-    ## todo -> is cascade okay here?
     creator = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -22,7 +21,6 @@ class Forum(models.Model):
 
 
 class Thread(models.Model):
-    ## todo -> is cascade okay here?
     creator = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
     forum = models.ForeignKey(Forum, on_delete=models.CASCADE, related_name='threads')
@@ -32,7 +30,6 @@ class Thread(models.Model):
     description = models.CharField(max_length=1000, blank=True)
     date_posted = models.DateTimeField(default=datetime.now, blank=True)
 
-    # tbd
     # class Meta:
     #     ordering = ('date_posted', )
 
@@ -40,7 +37,6 @@ class Thread(models.Model):
         return self.title
 
 class Message(models.Model):
-    ## todo -> is cascade okay here?
     creator = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
     thread = models.ForeignKey(Thread, on_delete=models.CASCADE, related_name='messages')
