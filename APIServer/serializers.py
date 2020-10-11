@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from django.core import serializers as jsonserializer
 from APIServer.models import Forum, Thread, Message
 
 
