@@ -13,11 +13,7 @@ class MessageCreation(generics.CreateAPIView):
 
 class MessageIsSolved(generics.RetrieveUpdateAPIView):
     """
-<<<<<<< HEAD
     Mark a message (reply) as correct - also update the corresponding thread (only 1 message is allow to be correct)
-=======
-    Mark a message (reply) as correct - also update the corresponding thread
->>>>>>> 3bd48d320a52faa626cfc92734ca46b2efd03043
     """
     queryset = Message.objects.all()
     serializer_class = MessageSolvedSerializer
