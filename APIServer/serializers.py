@@ -52,8 +52,9 @@ class MessageSolvedSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         message_status_update = validated_data.get('is_correct', instance.is_correct)
-        instance.is_correct = message_status_update
-        instance.thread.solved = message_status_update
-        instance.save()
-        instance.thread.save()
+        if instance.thread.solved == False:
+            instance.is_correct = message_status_update
+            instance.thread.solved = message_status_update
+            instance.save()
+            instance.thread.save()
         return instance
