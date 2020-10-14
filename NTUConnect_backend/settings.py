@@ -9,24 +9,44 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
-
+import os
+from enum import Enum
 from pathlib import Path
+
+
+class DeployPhaseEnum(Enum):
+    LOCAL = 1
+    STAGING = 2
+    PROD = 3
+    TEST = 5
+
+
+# Deploy phase
+deploy_phase = os.getenv('DEPLOY_PHASE', 'LOCAL')
+
+if deploy_phase == 'PROD':
+    deploy_phase = DeployPhaseEnum.PROD
+elif deploy_phase == 'STAGING':
+    deploy_phase = DeployPhaseEnum.STAGING
+elif deploy_phase == 'TEST':
+    deploy_phase = DeployPhaseEnum.TEST
+else:
+    deploy_phase = DeployPhaseEnum.LOCAL
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'rvy(8cms9+(%c!#p23^*bvlv6q67(#pxc3t6b!a(zp+$a+qk_0'
+SECRET_KEY = os.getenv('SECRET_KEY', 'rvy(8cms9+(%c!#p23^*bvlv6q67(#pxc3t6b!a(zp+$a+qk_0')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
+DEBUG = os.getenv('DEBUG', True)
 
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -45,20 +65,39 @@ INSTALLED_APPS = [
     # 3rd party
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_auth',
+    'dj_rest_auth',
     'allauth',
     'allauth.account',
-    'rest_auth.registration',
+    'dj_rest_auth.registration',
+    'django_s3_storage',
+    'corsheaders'
 ]
+
+YOUR_S3_BUCKET = "zappa-static-ntuconnect"
+
+STATICFILES_STORAGE = "django_s3_storage.storage.StaticS3Storage"
+AWS_S3_BUCKET_NAME_STATIC = YOUR_S3_BUCKET
+
+# These next two lines will serve the static files directly
+# from the s3 bucket
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/3.1/howto/static-files/
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % YOUR_S3_BUCKET
+STATIC_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
 
 AUTH_USER_MODEL = 'APIServer.CustomUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication'
+        'rest_framework.authentication.BasicAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     ],
 }
+
+REST_USE_JWT = True
+
+JWT_AUTH_COOKIE = 'JWT'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -73,6 +112,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -81,6 +121,25 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# CORS SETTINGS
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+
+if deploy_phase == DeployPhaseEnum.LOCAL:
+    # CSRF SETTINGS
+    CSRF_COOKIE_SECURE = False
+
+    SESSION_COOKIE_SECURE = False
+
+    SECURE_SSL_REDIRECT = False
+else:
+    # CSRF SETTINGS
+    CSRF_COOKIE_SECURE = True
+
+    SESSION_COOKIE_SECURE = True
+
+    SECURE_SSL_REDIRECT = True
 
 ROOT_URLCONF = 'NTUConnect_backend.urls'
 
@@ -103,17 +162,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'NTUConnect_backend.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if deploy_phase == DeployPhaseEnum.PROD:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'ntuconnect',
+            'USER': os.getenv('DATABASE_UNAME'),
+            'PASSWORD': os.getenv('DATABASE_PWD'),
+            'HOST': os.getenv('DATABASE_HOST'),
+            'PORT': '3306'
+        }
     }
-}
-
+elif deploy_phase == DeployPhaseEnum.LOCAL:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -133,7 +201,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -146,9 +213,3 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
-
-STATIC_URL = '/static/'

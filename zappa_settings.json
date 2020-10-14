@@ -1,0 +1,26 @@
+{
+    "production": {
+        "django_settings": "NTUConnect_backend.settings",
+        "profile_name": "default",
+        "project_name": "ntuconnect-back",
+        "runtime": "python3.7",
+        "s3_bucket": "zappa-lke0n16nk",
+        "aws_region": "ap-southeast-1",
+        "apigateway_enabled": true,
+        "manage_roles": true,
+        "cors": true,
+        "exclude": ["*.pyc", "venv", "typing*", "venv_zappa", "venv"]
+    },
+    "dev": {
+        "django_settings": "NTUConnect_backend.settings",
+        "profile_name": "default",
+        "project_name": "ntuconnect-back",
+        "runtime": "python3.7",
+        "s3_bucket": "zappa-lke0n16nk",
+        "aws_region": "ap-southeast-1",
+        "apigateway_enabled": true,
+        "manage_roles": true,
+        "cors": true,
+        "exclude": ["*.pyc", "venv", "typing*", "venv_zappa", "venv"]
+    }
+}

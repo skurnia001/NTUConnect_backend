@@ -4,11 +4,13 @@ from django.contrib.auth.models import AbstractUser
 
 from datetime import datetime
 
+
 class CustomUser(AbstractUser):
     name = models.CharField(blank=True, max_length=255)
 
     def __str__(self):
         return self.email
+
 
 class Forum(models.Model):
     course_code = models.CharField(max_length=20)
@@ -36,6 +38,7 @@ class Thread(models.Model):
     def __str__(self):
         return self.title
 
+
 class Message(models.Model):
     creator = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
@@ -53,3 +56,13 @@ class Message(models.Model):
         # truncated_content = Truncator(self.content)
         # return truncated_content.chars(25)
         return self.content
+
+
+class VoteMessage(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    message = models.ForeignKey(Message, on_delete=models.CASCADE)
+
+    value = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.value
