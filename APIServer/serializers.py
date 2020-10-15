@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from rest_framework_recursive.fields import RecursiveField
 from APIServer.models import Forum, Thread, Message
 
 
@@ -33,15 +34,26 @@ class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = ['id', 'content', 'thread', 'upvote', 'is_correct', 'date_posted', 'creator', 'date_posted']
+        fields = ['id', 'content', 'thread', 'upvote', 'is_correct', 'date_posted', 'creator', 'date_posted', 'reply']
 
+class MessageReplySerializer(serializers.ModelSerializer):
+    replies = RecursiveField(many=True)
+
+    class Meta:
+        model = Message
+        fields = ['id', 'content', 'thread', 'upvote', 'is_correct', 'date_posted', 'creator', 'date_posted', 'replies']
 
 class ThreadSpecificSerializer(serializers.ModelSerializer):
-    messages = MessageSerializer(many = True)
+    messages = serializers.SerializerMethodField('get_parent_messages')
 
     class Meta:
         model = Thread
         fields = ['id', 'title', 'solved', 'description', 'date_posted', 'creator', 'forum', 'messages']
+
+    def get_parent_messages(self, thread):
+        parent_messages = Message.objects.filter(thread=thread, reply__isnull=True)
+        serializer = MessageReplySerializer(instance=parent_messages, many=True)
+        return serializer.data
 
 
 class MessageSolvedSerializer(serializers.ModelSerializer):
