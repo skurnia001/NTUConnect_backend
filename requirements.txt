@@ -10,6 +10,7 @@ django-allauth==0.42.0
 django-cors-headers==3.5.0
 django-s3-storage==0.13.4
 djangorestframework==3.12.1
+djangorestframework-recursive==0.1.2
 djangorestframework-simplejwt==4.4.0
 idna==2.10
 jmespath==0.10.0
