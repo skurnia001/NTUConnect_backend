@@ -48,6 +48,7 @@ class Message(models.Model):
     content = models.CharField(max_length=1000)
     is_correct = models.BooleanField(default=False)
     date_posted = models.DateTimeField(default=datetime.now, blank=True)
+    reply = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
 
     class Meta:
         ordering = ('date_posted',)

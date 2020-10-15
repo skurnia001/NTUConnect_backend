@@ -17,6 +17,3 @@ class MessageIsSolved(generics.RetrieveUpdateAPIView):
     """
     queryset = Message.objects.all()
     serializer_class = MessageSolvedSerializer
-
-
-
