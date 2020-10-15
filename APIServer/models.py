@@ -7,6 +7,7 @@ from datetime import datetime
 
 class CustomUser(AbstractUser):
     name = models.CharField(blank=True, max_length=255)
+    score = models.IntegerField(default=0)
 
     def __str__(self):
         return self.email

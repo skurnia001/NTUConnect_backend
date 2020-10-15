@@ -8,16 +8,18 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ('id', 'username',)
+        fields = ['id', 'username', 'score']
 
 
 class ForumSerializer(serializers.ModelSerializer):
+    # creator = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Forum
         fields = ['id', 'course_code', 'course_title', 'creator']
 
 class ThreadSerializer(serializers.ModelSerializer):
+    # creator = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Thread
@@ -31,6 +33,7 @@ class ForumSpecificSerializer(serializers.ModelSerializer):
         fields = ['id', 'course_code', 'course_title', 'creator', 'threads']
 
 class MessageSerializer(serializers.ModelSerializer):
+    # creator = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Message
@@ -64,9 +67,14 @@ class MessageSolvedSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         message_status_update = validated_data.get('is_correct', instance.is_correct)
-        if instance.thread.solved == False:
+        if instance.thread.solved == False and message_status_update == True:
             instance.is_correct = message_status_update
             instance.thread.solved = message_status_update
+
+            ## Temporary Counter
+            instance.creator.score += 5
+
             instance.save()
             instance.thread.save()
+            instance.creator.save()
         return instance
