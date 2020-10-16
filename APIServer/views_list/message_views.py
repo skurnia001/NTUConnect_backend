@@ -1,7 +1,7 @@
 from rest_framework import generics
 
 from APIServer.models import Message
-from APIServer.serializers import MessageSerializer, MessageSolvedSerializer
+from APIServer.serializers import MessageSerializer, MessageSolvedSerializer, MessageVoteSerializer
 
 ## Message (comment / reply) API
 
@@ -17,3 +17,10 @@ class MessageIsSolved(generics.RetrieveUpdateAPIView):
     """
     queryset = Message.objects.all()
     serializer_class = MessageSolvedSerializer
+
+class MessageVote(generics.RetrieveUpdateAPIView):
+    """
+    Upvote or downvote a message (comment)
+    """
+    queryset = Message.objects.all()
+    serializer_class = MessageVoteSerializer

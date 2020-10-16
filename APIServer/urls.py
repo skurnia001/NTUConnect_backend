@@ -5,7 +5,7 @@ from .views import UserList, UserDetail
 
 from APIServer.views_list.forum_views import ForumCreation, ForumList, ForumSpecific, ForumSubscription
 from APIServer.views_list.thread_views import ThreadCreation, ThreadList, ThreadSpecific
-from APIServer.views_list.message_views import MessageCreation, MessageIsSolved
+from APIServer.views_list.message_views import MessageCreation, MessageIsSolved, MessageVote
 
 urlpatterns = [
     path('users/', UserList.as_view()),
@@ -19,4 +19,5 @@ urlpatterns = [
     path('threads/<int:pk>/detail/', ThreadSpecific.as_view()),
     path('messages/create/', MessageCreation.as_view()),
     path('messages/<int:pk>/mark-solved/', MessageIsSolved.as_view()),
+    path('messages/<int:pk>/upvote', MessageVote.as_view()),
 ]
