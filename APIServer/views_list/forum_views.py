@@ -1,11 +1,16 @@
 from rest_framework import generics
 
 from APIServer.models import Forum
-from APIServer.serializers import ForumSerializer, ForumSpecificSerializer
+from APIServer.serializers import (
+    ForumSerializer,
+    ForumListSerializer,
+    ForumSpecificSerializer,
+    ForumSubscriptionSerializer
+)
 
 class ForumCreation(generics.CreateAPIView):
     """
-    Create a new Forum
+    Create a new Forum (teacher only)
     """
     serializer_class = ForumSerializer
 
@@ -14,7 +19,7 @@ class ForumList(generics.ListAPIView):
     List all Forum
     """
     queryset = Forum.objects.all()
-    serializer_class = ForumSerializer
+    serializer_class = ForumListSerializer
 
 class ForumSpecific(generics.RetrieveAPIView):
     """
@@ -23,5 +28,9 @@ class ForumSpecific(generics.RetrieveAPIView):
     queryset = Forum.objects.all()
     serializer_class = ForumSpecificSerializer
 
-
+class ForumSubscription(generics.CreateAPIView):
+    """
+    Student can join a forum
+    """
+    serializer_class = ForumSubscriptionSerializer
 

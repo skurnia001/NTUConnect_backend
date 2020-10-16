@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework_recursive.fields import RecursiveField
-from APIServer.models import Forum, Thread, Message
+from APIServer.models import Forum, Thread, Message, ForumJoined
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -12,28 +12,58 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ForumSerializer(serializers.ModelSerializer):
-    # creator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    creator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = Forum
+        fields = ['id', 'course_code', 'course_title', 'creator']
+
+    # def create(self, validated_data):
+    #     print(validated_data)
+    #     creator = validated_data.pop('creator')
+    #
+    #     instance = Forum.objects.create(**validated_data)
+    #
+    #     ForumJoined.create(user=creator, forum=instance)
+    #
+    #
+    #     return instance
+
+class ForumSubscriptionSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = ForumJoined
+        fields = ['forum', 'user']
+
+class ForumListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Forum
         fields = ['id', 'course_code', 'course_title', 'creator']
 
 class ThreadSerializer(serializers.ModelSerializer):
-    # creator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    creator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = Thread
+        fields = ['id', 'title', 'solved', 'description', 'date_posted', 'creator', 'forum']
+
+class ThreadListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Thread
         fields = ['id', 'title', 'solved', 'description', 'date_posted', 'creator', 'forum']
 
 class ForumSpecificSerializer(serializers.ModelSerializer):
-    threads = ThreadSerializer(many = True)
+    threads = ThreadListSerializer(many = True)
 
     class Meta:
         model = Forum
         fields = ['id', 'course_code', 'course_title', 'creator', 'threads']
 
 class MessageSerializer(serializers.ModelSerializer):
-    # creator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    creator = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Message
