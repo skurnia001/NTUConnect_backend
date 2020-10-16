@@ -18,17 +18,6 @@ class ForumSerializer(serializers.ModelSerializer):
         model = Forum
         fields = ['id', 'course_code', 'course_title', 'creator']
 
-    # def create(self, validated_data):
-    #     print(validated_data)
-    #     creator = validated_data.pop('creator')
-    #
-    #     instance = Forum.objects.create(**validated_data)
-    #
-    #     ForumJoined.create(user=creator, forum=instance)
-    #
-    #
-    #     return instance
-
 class ForumSubscriptionSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 

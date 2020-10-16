@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
+from django.db.models.signals import post_save
 from datetime import datetime
 
 
@@ -20,6 +20,15 @@ class Forum(models.Model):
 
     def __str__(self):
         return self.course_code
+
+## Tbd - move to signals.py
+## find how to trigeer the signals on different file
+
+def create_forum_joined(sender, instance, **kwargs):
+    if kwargs['created']:
+        ForumJoined.objects.create(user=instance.creator, forum=instance)
+
+post_save.connect(create_forum_joined, sender=Forum)
 
 
 class Thread(models.Model):
@@ -61,7 +70,7 @@ class ForumJoined(models.Model):
     forum = models.ForeignKey(Forum, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.user.email
+        return self.user.username
 
 class VoteMessage(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
