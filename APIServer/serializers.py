@@ -25,6 +25,10 @@ class ForumSubscriptionSerializer(serializers.ModelSerializer):
         model = ForumJoined
         fields = ['forum', 'user']
 
+    # def update(self, instance, validated_data):
+    #     ForumJoined.objects.create(user=validated_data.get('user'), forum=instance)
+    #     return instance
+
 class ForumListSerializer(serializers.ModelSerializer):
 
     class Meta:
