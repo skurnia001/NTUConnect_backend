@@ -97,3 +97,26 @@ class MessageSolvedSerializer(serializers.ModelSerializer):
             instance.thread.save()
             instance.creator.save()
         return instance
+
+class MessageVoteSerializer(serializers.ModelSerializer):
+    is_upvote = serializers.BooleanField(write_only=True)
+
+    class Meta:
+        model = Message
+        fields = ['id', 'content', 'thread', 'upvote', 'is_correct', 'date_posted', 'creator', 'date_posted', 'is_upvote']
+
+    def update(self, instance, validated_data):
+        is_upvote = validated_data.get('is_upvote', None)
+        if is_upvote is None:
+            return instance
+
+        if is_upvote:
+            instance.upvote += 1
+            instance.creator.score += 1
+        else:
+            instance.upvote -= 1
+            instance.creator.score -= 1
+
+        instance.save()
+        instance.creator.save()
+        return instance
