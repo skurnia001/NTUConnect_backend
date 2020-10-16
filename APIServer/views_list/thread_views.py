@@ -1,7 +1,7 @@
 from rest_framework import generics
 
 from APIServer.models import Thread
-from APIServer.serializers import ThreadSerializer, ThreadSpecificSerializer
+from APIServer.serializers import ThreadSerializer, ThreadListSerializer, ThreadSpecificSerializer
 
 ## Thread API
 
@@ -16,7 +16,17 @@ class ThreadList(generics.ListAPIView):
     List all Thread
     """
     queryset = Thread.objects.all()
-    serializer_class = ThreadSerializer
+    serializer_class = ThreadListSerializer
+
+# class ThreadListV2(generics.ListAPIView):
+#     """
+#     List all Thread by a particular user
+#     """
+#     serializer_class = ThreadSerializer
+#
+#     def get_queryset(self):
+#         current_user = self.request.user
+#         return Thread.objects.filter(creator=current_user)
 
 class ThreadSpecific(generics.RetrieveAPIView):
     """

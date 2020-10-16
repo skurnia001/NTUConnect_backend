@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import CustomUser, Forum, Thread, Message
+from .models import CustomUser, Forum, Thread, Message, ForumJoined
 
 
 class CustomUserAdmin(UserAdmin):
@@ -14,3 +14,4 @@ admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Forum)
 admin.site.register(Thread)
 admin.site.register(Message)
+admin.site.register(ForumJoined)

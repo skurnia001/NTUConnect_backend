@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-# from django.utils.text import Truncator
 
 from datetime import datetime
 
@@ -55,10 +54,14 @@ class Message(models.Model):
         ordering = ('date_posted',)
 
     def __str__(self):
-        # truncated_content = Truncator(self.content)
-        # return truncated_content.chars(25)
         return self.content
 
+class ForumJoined(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    forum = models.ForeignKey(Forum, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user.email
 
 class VoteMessage(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
