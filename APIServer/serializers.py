@@ -168,6 +168,7 @@ class VoteSerialzier(serializers.ModelSerializer):
 
 
 class ForumJoinedSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = ForumJoined
         fields = ['forum']
