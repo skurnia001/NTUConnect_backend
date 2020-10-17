@@ -119,6 +119,8 @@ class MessageSolvedSerializer(serializers.ModelSerializer):
             instance.save()
             instance.thread.save()
             instance.creator.save()
+        return instance
+
 
 class MessageVoteSerializer(serializers.ModelSerializer):
     action = serializers.IntegerField(write_only=True, allow_null=True)
