@@ -5,7 +5,8 @@ from APIServer.serializers import (
     ForumSerializer,
     ForumListSerializer,
     ForumSpecificSerializer,
-    ForumSubscriptionSerializer
+    ForumSubscriptionSerializer,
+    ForumJoinedSerializer
 )
 
 class ForumCreation(generics.CreateAPIView):
@@ -33,6 +34,8 @@ class ForumSubscription(generics.CreateAPIView):
     Student can join a forum
     """
     serializer_class = ForumSubscriptionSerializer
+
+
 
 # class ForumSubscriptionV2(generics.UpdateAPIView):
 #     """
