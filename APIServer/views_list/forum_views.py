@@ -36,7 +36,6 @@ class ForumSubscription(generics.CreateAPIView):
     serializer_class = ForumSubscriptionSerializer
 
 
-
 # class ForumSubscriptionV2(generics.UpdateAPIView):
 #     """
 #     Student can join a forum - f

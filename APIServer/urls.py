@@ -8,6 +8,7 @@ from APIServer.views_list.thread_views import ThreadCreation, ThreadList, Thread
 from APIServer.views_list.message_views import MessageCreation, MessageIsSolved, MessageVote
 from APIServer.views_list.forumjoined_views import ForumJoined
 
+
 urlpatterns = [
     path('users/', UserList.as_view()),
     path('users/<int:pk>/', UserDetail.as_view()),
