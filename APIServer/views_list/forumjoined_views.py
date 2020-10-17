@@ -12,5 +12,5 @@ class ForumJoined(generics.ListAPIView):
     serializer_class = ForumJoinedSerializer
 
     def get_queryset(self):
-        forums_joined = ForumJoinedModel.objects.all()
+        forums_joined = ForumJoinedModel.objects.filter(user=self.request.user)
         return forums_joined
