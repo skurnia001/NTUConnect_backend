@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework_recursive.fields import RecursiveField
-from APIServer.models import Forum, Thread, Message, ForumJoined, VoteMessage
+from APIServer.models import Forum, Thread, Message, ForumJoined, VoteMessage, CustomUser
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -85,11 +85,17 @@ class ThreadSpecificSerializer(serializers.ModelSerializer):
         return serializer.data
 
 class MessageSerializer(serializers.ModelSerializer):
-    creator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    creator = serializers.SerializerMethodField('get_creator')
 
     class Meta:
         model = Message
         fields = ['id', 'content', 'thread', 'upvote', 'is_correct', 'date_posted', 'creator', 'date_posted', 'reply']
+        read_only_fields = ['creator',]
+
+    def get_creator(self, message):
+        user = CustomUser.objects.filter(id=self.context['request'].user.id)
+        serializer = UserSerializer(user, many=True)
+        return serializer.data
 
 
 class MessageReplySerializer(serializers.ModelSerializer):
