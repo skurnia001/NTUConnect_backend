@@ -79,4 +79,4 @@ class VoteMessage(models.Model):
     value = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.value
+        return self.user.username + " status: " + str(self.value)

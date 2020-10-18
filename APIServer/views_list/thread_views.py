@@ -18,7 +18,6 @@ class ThreadSpecific(generics.RetrieveAPIView):
     queryset = Thread.objects.all()
     serializer_class = ThreadSpecificSerializer
 
-
 class ThreadList(generics.ListAPIView):
     """
     List all thread that current user has joined
@@ -39,7 +38,6 @@ class ThreadList(generics.ListAPIView):
 #     """
 #     queryset = Thread.objects.all()
 #     serializer_class = ThreadListSerializer
-
 
 
 
