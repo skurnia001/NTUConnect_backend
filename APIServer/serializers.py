@@ -130,7 +130,7 @@ class MessageSolvedSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = ['id', 'content', 'thread', 'upvote', 'is_correct', 'date_posted', 'creator', 'date_posted']
+        fields = ['id', 'is_correct']
 
     def update(self, instance, validated_data):
         message_status_update = validated_data.get('is_correct', instance.is_correct)
@@ -152,7 +152,7 @@ class MessageVoteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = ['id', 'content', 'thread', 'upvote', 'is_correct', 'date_posted', 'creator', 'date_posted', 'action']
+        fields = ['id', 'action']
 
     def update(self, instance, validated_data):
         action = validated_data.get('action', 0)
