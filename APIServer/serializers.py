@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework_recursive.fields import RecursiveField
-from APIServer.models import Forum, Thread, Message, ForumJoined, VoteMessage
+from APIServer.models import Forum, Thread, Message, ForumJoined, VoteMessage, CustomUser
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -12,11 +12,16 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ForumSerializer(serializers.ModelSerializer):
-    creator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    creator = serializers.SerializerMethodField('get_creator')
 
     class Meta:
         model = Forum
         fields = ['id', 'course_code', 'course_title', 'creator']
+        read_only_fields = ['creator', ]
+
+    def get_creator(self, forum):
+        return self.context['request'].user.id
+
 
 class ForumSubscriptionSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
@@ -42,7 +47,6 @@ class ForumListSerializer(serializers.ModelSerializer):
         return forum_joined
 
 
-
 class ThreadListSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -65,11 +69,15 @@ class ForumSpecificSerializer(serializers.ModelSerializer):
 
 
 class ThreadSerializer(serializers.ModelSerializer):
-    creator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    creator = serializers.SerializerMethodField('get_creator')
 
     class Meta:
         model = Thread
         fields = ['id', 'title', 'solved', 'description', 'date_posted', 'creator', 'forum']
+        read_only_fields = ['creator',]
+
+    def get_creator(self, thread):
+        return self.context['request'].user.id
 
 
 class ThreadSpecificSerializer(serializers.ModelSerializer):
@@ -85,11 +93,15 @@ class ThreadSpecificSerializer(serializers.ModelSerializer):
         return serializer.data
 
 class MessageSerializer(serializers.ModelSerializer):
-    creator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    creator = serializers.SerializerMethodField('get_creator')
 
     class Meta:
         model = Message
         fields = ['id', 'content', 'thread', 'upvote', 'is_correct', 'date_posted', 'creator', 'date_posted', 'reply']
+        read_only_fields = ['creator',]
+
+    def get_creator(self, message):
+        return self.context['request'].user.id
 
 
 class MessageReplySerializer(serializers.ModelSerializer):
@@ -118,7 +130,7 @@ class MessageSolvedSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = ['id', 'content', 'thread', 'upvote', 'is_correct', 'date_posted', 'creator', 'date_posted']
+        fields = ['id', 'is_correct']
 
     def update(self, instance, validated_data):
         message_status_update = validated_data.get('is_correct', instance.is_correct)
@@ -140,7 +152,7 @@ class MessageVoteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = ['id', 'content', 'thread', 'upvote', 'is_correct', 'date_posted', 'creator', 'date_posted', 'action']
+        fields = ['id', 'action']
 
     def update(self, instance, validated_data):
         action = validated_data.get('action', 0)

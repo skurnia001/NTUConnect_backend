@@ -11,6 +11,9 @@ class ThreadCreation(generics.CreateAPIView):
     """
     serializer_class = ThreadSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
+
 class ThreadSpecific(generics.RetrieveAPIView):
     """
     View a specific thread (also provide all messages in that thread) - See specific thread

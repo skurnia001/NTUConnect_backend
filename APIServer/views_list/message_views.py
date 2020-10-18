@@ -11,6 +11,9 @@ class MessageCreation(generics.CreateAPIView):
     """
     serializer_class = MessageSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
+
 class MessageIsSolved(generics.RetrieveUpdateAPIView):
     """
     Mark a message (reply) as correct - also update the corresponding thread (only 1 message is allow to be correct)
