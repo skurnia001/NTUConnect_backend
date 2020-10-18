@@ -94,14 +94,28 @@ class ThreadSpecificSerializer(serializers.ModelSerializer):
 
 class MessageSerializer(serializers.ModelSerializer):
     creator = serializers.SerializerMethodField('get_creator')
+    status = serializers.SerializerMethodField('get_status')
 
     class Meta:
         model = Message
-        fields = ['id', 'content', 'thread', 'upvote', 'is_correct', 'date_posted', 'creator', 'date_posted', 'reply']
+        fields = ['id', 'content', 'thread', 'upvote', 'is_correct', 'date_posted', 'creator', 'date_posted', 'reply', 'status']
         read_only_fields = ['creator',]
 
     def get_creator(self, message):
         return self.context['request'].user.id
+
+    def get_status(self, message):
+        user = self.context['request'].user
+        vote_status = VoteMessage.objects.filter(user=user, message=message)
+        if not vote_status:
+            ## tbd -> object created can't be serialized directly (?)
+            VoteMessage.objects.create(user=user, message=message)
+            vote_status = VoteMessage.objects.filter(user=user, message=message)
+            serializer = VoteSerialzier(instance=vote_status, many=True)
+            return serializer.data
+        else:
+            serializer = VoteSerialzier(instance=vote_status, many=True)
+            return serializer.data
 
 
 class MessageReplySerializer(serializers.ModelSerializer):
