@@ -167,16 +167,16 @@ class MessageVoteSerializer(serializers.ModelSerializer):
         else:
             vote_status = vote_status[0]
 
-        if action == 1:
+        if action > 0:
             if vote_status.value < 1:
-                instance.upvote += 1
-                instance.creator.score += 1
-                vote_status.value = min(1, vote_status.value + 1)
+                instance.upvote += action
+                instance.creator.score += action
+                vote_status.value = min(1, vote_status.value + action)
         else:
             if vote_status.value > -1:
-                instance.upvote -= 1
-                instance.creator.score -= 1
-                vote_status.value = max(-1, vote_status.value - 1)
+                instance.upvote += action
+                instance.creator.score += action
+                vote_status.value = max(-1, vote_status.value + action)
 
         instance.save()
         instance.creator.save()
