@@ -38,11 +38,8 @@ class ForumListSerializer(serializers.ModelSerializer):
 
     def get_is_joined(self, forum):
         user = self.context['request'].user
-        forum_joined = ForumJoined.objects.filter(user=user, forum=forum)
-        if not forum_joined:
-            return False
-        else:
-            return True
+        forum_joined = ForumJoined.objects.filter(user=user, forum=forum).exists()
+        return forum_joined
 
 
 
@@ -63,11 +60,8 @@ class ForumSpecificSerializer(serializers.ModelSerializer):
 
     def get_is_joined(self, forum):
         user = self.context['request'].user
-        forum_joined = ForumJoined.objects.filter(user=user, forum=forum)
-        if not forum_joined:
-            return False
-        else:
-            return True
+        forum_joined = ForumJoined.objects.filter(user=user, forum=forum).exists()
+        return forum_joined
 
 
 class ThreadSerializer(serializers.ModelSerializer):
