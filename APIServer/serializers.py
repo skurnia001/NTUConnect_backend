@@ -30,10 +30,20 @@ class ForumSubscriptionSerializer(serializers.ModelSerializer):
     #     return instance
 
 class ForumListSerializer(serializers.ModelSerializer):
+    is_joined = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Forum
-        fields = ['id', 'course_code', 'course_title', 'creator']
+        fields = ['id', 'course_code', 'course_title', 'creator', 'is_joined']
+
+    def get_is_joined(self, forum):
+        user = self.context['request'].user
+        forum_joined = ForumJoined.objects.filter(user=user, forum=forum)
+        if not forum_joined:
+            return False
+        else:
+            return True
+
 
 
 class ThreadListSerializer(serializers.ModelSerializer):
@@ -45,10 +55,19 @@ class ThreadListSerializer(serializers.ModelSerializer):
 
 class ForumSpecificSerializer(serializers.ModelSerializer):
     threads = ThreadListSerializer(many = True)
+    is_joined = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Forum
-        fields = ['id', 'course_code', 'course_title', 'creator', 'threads']
+        fields = ['id', 'course_code', 'course_title', 'creator', 'threads', 'is_joined']
+
+    def get_is_joined(self, forum):
+        user = self.context['request'].user
+        forum_joined = ForumJoined.objects.filter(user=user, forum=forum)
+        if not forum_joined:
+            return False
+        else:
+            return True
 
 
 class ThreadSerializer(serializers.ModelSerializer):

@@ -5,6 +5,7 @@ from APIServer.serializers import (
     ForumJoinedSerializer
 )
 
+## Seems not needed anymore
 class ForumJoined(generics.ListAPIView):
     """
     List all forum that current user has joined
