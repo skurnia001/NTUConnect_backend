@@ -12,11 +12,16 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ForumSerializer(serializers.ModelSerializer):
-    creator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    creator = serializers.SerializerMethodField('get_creator')
 
     class Meta:
         model = Forum
         fields = ['id', 'course_code', 'course_title', 'creator']
+        read_only_fields = ['creator', ]
+
+    def get_creator(self, forum):
+        return self.context['request'].user.id
+
 
 class ForumSubscriptionSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
@@ -42,7 +47,6 @@ class ForumListSerializer(serializers.ModelSerializer):
         return forum_joined
 
 
-
 class ThreadListSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -65,11 +69,15 @@ class ForumSpecificSerializer(serializers.ModelSerializer):
 
 
 class ThreadSerializer(serializers.ModelSerializer):
-    creator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    creator = serializers.SerializerMethodField('get_creator')
 
     class Meta:
         model = Thread
         fields = ['id', 'title', 'solved', 'description', 'date_posted', 'creator', 'forum']
+        read_only_fields = ['creator',]
+
+    def get_creator(self, thread):
+        return self.context['request'].user.id
 
 
 class ThreadSpecificSerializer(serializers.ModelSerializer):
@@ -93,9 +101,7 @@ class MessageSerializer(serializers.ModelSerializer):
         read_only_fields = ['creator',]
 
     def get_creator(self, message):
-        user = CustomUser.objects.filter(id=self.context['request'].user.id)
-        serializer = UserSerializer(user, many=True)
-        return serializer.data
+        return self.context['request'].user.id
 
 
 class MessageReplySerializer(serializers.ModelSerializer):

@@ -15,6 +15,9 @@ class ForumCreation(generics.CreateAPIView):
     """
     serializer_class = ForumSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
+
 class ForumList(generics.ListAPIView):
     """
     List all Forum
