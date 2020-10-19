@@ -7,7 +7,7 @@ from .models import CustomUser, Forum, Thread, Message, ForumJoined, VoteMessage
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
     fieldsets = UserAdmin.fieldsets + (
-        (None, {'fields': ('score',)}),
+        ('Other Fields', {'fields': ('score', 'type')}),
     )
 
 admin.site.register(CustomUser, CustomUserAdmin)

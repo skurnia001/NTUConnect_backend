@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
+from datetime import timedelta
 from enum import Enum
 from pathlib import Path
 
@@ -44,7 +45,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'rvy(8cms9+(%c!#p23^*bvlv6q67(#pxc3t6b!a(zp
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-DEBUG = os.getenv('DEBUG', True)
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ['*']
 
@@ -89,15 +90,20 @@ AUTH_USER_MODEL = 'APIServer.CustomUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     ],
+    'EXCEPTION_HANDLER': 'APIServer.exceptions.custom_exception_handler',
 }
 
 REST_USE_JWT = True
 
 JWT_AUTH_COOKIE = 'JWT'
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+}
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -164,7 +170,7 @@ WSGI_APPLICATION = 'NTUConnect_backend.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-if deploy_phase == DeployPhaseEnum.PROD:
+if True or deploy_phase == DeployPhaseEnum.PROD:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',

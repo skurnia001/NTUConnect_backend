@@ -8,7 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ['id', 'username', 'score']
+        fields = ['id', 'username', 'score', 'type']
 
 
 class ForumSerializer(serializers.ModelSerializer):
@@ -88,7 +88,7 @@ class ThreadSpecificSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'solved', 'description', 'date_posted', 'creator', 'forum', 'messages']
 
     def get_parent_messages(self, thread):
-        parent_messages = Message.objects.filter(thread=thread, reply__isnull=True)
+        parent_messages = Message.objects.filter(thread=thread, reply__isnull=True).order_by('-upvote')
         serializer = MessageReplySerializer(instance=parent_messages, many=True, context=self.context)
         return serializer.data
 

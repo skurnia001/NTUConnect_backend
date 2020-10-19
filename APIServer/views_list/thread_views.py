@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics, permissions
 
 from APIServer.models import Thread, ForumJoined
 from APIServer.serializers import ThreadSerializer, ThreadListSerializer, ThreadSpecificSerializer
@@ -9,6 +9,7 @@ class ThreadCreation(generics.CreateAPIView):
     """
     Create a new Thread
     """
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = ThreadSerializer
 
     def perform_create(self, serializer):
@@ -18,6 +19,7 @@ class ThreadSpecific(generics.RetrieveAPIView):
     """
     View a specific thread (also provide all messages in that thread) - See specific thread
     """
+    permission_classes = [permissions.IsAuthenticated]
     queryset = Thread.objects.all()
     serializer_class = ThreadSpecificSerializer
 
@@ -25,6 +27,7 @@ class ThreadList(generics.ListAPIView):
     """
     List all thread that current user has joined
     """
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = ThreadListSerializer
 
     def get_queryset(self):

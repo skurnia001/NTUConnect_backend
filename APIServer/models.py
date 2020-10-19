@@ -2,14 +2,30 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save
 from datetime import datetime
+from django.utils.translation import gettext_lazy as _
 
 
 class CustomUser(AbstractUser):
+    class UserType(models.TextChoices):
+        STUDENT = 'ST', _('Student')
+        INSTRUCTOR = 'IN', _('Instructor')
+
     name = models.CharField(blank=True, max_length=255)
     score = models.IntegerField(default=0)
+    type = models.CharField(
+        max_length=2,
+        choices=UserType.choices,
+        default=UserType.STUDENT,
+    )
 
     def __str__(self):
         return self.email
+
+    def is_student(self):
+        return self.type == self.UserType.STUDENT
+
+    def is_instructor(self):
+        return self.type == self.UserType.INSTRUCTOR
 
 
 class Forum(models.Model):
@@ -41,8 +57,8 @@ class Thread(models.Model):
     description = models.CharField(max_length=1000, blank=True)
     date_posted = models.DateTimeField(default=datetime.now, blank=True)
 
-    # class Meta:
-    #     ordering = ('date_posted', )
+    class Meta:
+        ordering = ('-date_posted', )
 
     def __str__(self):
         return self.title
@@ -59,8 +75,8 @@ class Message(models.Model):
     date_posted = models.DateTimeField(default=datetime.now, blank=True)
     reply = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
 
-    class Meta:
-        ordering = ('date_posted',)
+    # class Meta:
+    #     ordering = ('date_posted',)
 
     def __str__(self):
         return self.content
