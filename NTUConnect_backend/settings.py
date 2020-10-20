@@ -174,7 +174,7 @@ if True or deploy_phase == DeployPhaseEnum.PROD:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'ntuconnect',
+            'NAME': os.getenv('DATABASE_NAME', 'ntuconnect'),
             'USER': os.getenv('DATABASE_UNAME'),
             'PASSWORD': os.getenv('DATABASE_PWD'),
             'HOST': os.getenv('DATABASE_HOST'),
