@@ -22,19 +22,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version:  '3.7'
-      - name: Install Dependencies
-        run: |
-          pip install virtualenv
-          virtualenv .venv
-          source ./.venv/bin/activate
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-      - name: Migrate Database Changes
-        run: |
-          python manage.py migrate
-      - name: Run Tests
-        run: |
-          python manage.py test
       - name: Configure AWS Credentials
         run: |
           mkdir -p ~/.aws
@@ -44,7 +31,14 @@ jobs:
           aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key = ${{ secrets.AWS_SECRET_KEY_ID }}
           region = ${AWS_DEFAULT_REGION}" > ~/.aws/credentials
-      - name: Deploy to Lambda
+      - name: Install, Test, Deploy
         run: |
+          python -m pip install --upgrade pip
+          pip install virtualenv
+          virtualenv .venv
+          source ./.venv/bin/activate
+          pip install -r requirements.txt
+          python manage.py migrate
+          python manage.py test
           pip install zappa
           zappa update production
