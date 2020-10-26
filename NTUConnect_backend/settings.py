@@ -69,22 +69,26 @@ INSTALLED_APPS = [
     'dj_rest_auth',
     'allauth',
     'allauth.account',
+    'allauth.socialaccount',
     'dj_rest_auth.registration',
     'django_s3_storage',
     'corsheaders'
 ]
 
-YOUR_S3_BUCKET = "zappa-static-ntuconnect"
+if deploy_phase == DeployPhaseEnum.PROD:
+    YOUR_S3_BUCKET = "zappa-static-ntuconnect"
 
-STATICFILES_STORAGE = "django_s3_storage.storage.StaticS3Storage"
-AWS_S3_BUCKET_NAME_STATIC = YOUR_S3_BUCKET
+    STATICFILES_STORAGE = "django_s3_storage.storage.StaticS3Storage"
+    AWS_S3_BUCKET_NAME_STATIC = YOUR_S3_BUCKET
 
-# These next two lines will serve the static files directly
-# from the s3 bucket
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % YOUR_S3_BUCKET
-STATIC_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
+    # These next two lines will serve the static files directly
+    # from the s3 bucket
+    # Static files (CSS, JavaScript, Images)
+    # https://docs.djangoproject.com/en/3.1/howto/static-files/
+    AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % YOUR_S3_BUCKET
+    STATIC_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
+else:
+    STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'APIServer.CustomUser'
 
