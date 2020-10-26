@@ -1,4 +1,5 @@
 from rest_framework import generics, permissions
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 from APIServer.models import Thread, ForumJoined
 from APIServer.serializers import ThreadSerializer, ThreadListSerializer, ThreadSpecificSerializer
@@ -38,12 +39,16 @@ class ThreadList(generics.ListAPIView):
         threads = Thread.objects.filter(forum__in=forums_id)
         return threads
 
-# class ThreadList(generics.ListAPIView):
-#     """
-#     List all Thread
-#     """
-#     queryset = Thread.objects.all()
-#     serializer_class = ThreadListSerializer
+class ThreadSearch(generics.ListAPIView):
+    """
+    Search a thread
+    """
+    queryset = Thread.objects.all()
+    serializer_class = ThreadListSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ['title', 'description']
+    ordering = ['-date_posted']
 
 
 

@@ -45,7 +45,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'rvy(8cms9+(%c!#p23^*bvlv6q67(#pxc3t6b!a(zp
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['*']
 
@@ -170,7 +170,7 @@ WSGI_APPLICATION = 'NTUConnect_backend.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-if True or deploy_phase == DeployPhaseEnum.PROD:
+if deploy_phase == DeployPhaseEnum.PROD:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
