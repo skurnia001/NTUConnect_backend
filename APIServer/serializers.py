@@ -10,6 +10,25 @@ class UserSerializer(serializers.ModelSerializer):
         model = get_user_model()
         fields = ['id', 'username', 'score', 'type']
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    messages = serializers.SerializerMethodField('get_messages')
+    threads = serializers.SerializerMethodField('get_threads')
+
+    class Meta:
+        model = get_user_model()
+        fields = ['id', 'username', 'score', 'type', 'messages', 'threads']
+
+    def get_messages(self, user):
+        messages = Message.objects.filter(creator=user)
+        serializer = MessageSerializer(instance=messages, many=True, context=self.context)
+        print(serializer)
+        return serializer.data
+
+    def get_threads(self, user):
+        threads = Thread.objects.filter(creator=user)
+        serializer = ThreadListSerializer(instance=threads, many=True)
+        return serializer.data
+
 
 class ForumSerializer(serializers.ModelSerializer):
     creator = serializers.SerializerMethodField('get_creator')
@@ -102,6 +121,7 @@ class ThreadSerializer(serializers.ModelSerializer):
 class ThreadSpecificSerializer(serializers.ModelSerializer):
     messages = serializers.SerializerMethodField('get_parent_messages')
     creator = serializers.SerializerMethodField(read_only=True)
+    forum = ForumSerializer()
 
     class Meta:
         model = Thread
