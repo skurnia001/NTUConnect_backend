@@ -18,3 +18,10 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 class UserProfile(generics.RetrieveAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserProfileSerializer
+
+class UserLoggedIn(generics.ListAPIView):
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        user = CustomUser.objects.filter(id=self.request.user.id)
+        return user
