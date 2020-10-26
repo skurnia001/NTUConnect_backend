@@ -24,6 +24,8 @@ jobs:
           python-version:  '3.7'
       - name: Install Dependencies
         run: |
+          virtualenv .venv
+          source ./.venv/bin/activate
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Migrate Database Changes
