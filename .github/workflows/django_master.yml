@@ -29,8 +29,8 @@ jobs:
 
           echo "[default]
           aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key = ${{ secrets.AWS_SECRET_KEY_ID }}
-          region = ${AWS_DEFAULT_REGION}" > ~/.aws/credentials
+          aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region = ${{ secrets.AWS_DEFAULT_REGION }}" > ~/.aws/credentials
       - name: Install, Test, Deploy
         run: |
           python -m pip install --upgrade pip
