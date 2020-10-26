@@ -17,28 +17,31 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version:  '3.7'
-    - name: Install Dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Migrate Database Changes
-      run: |
-        python manage.py migrate
-    - name: Run Tests
-      run: |
-        python manage.py test
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-    - name: Deploy to Lambda
-      run: |
-        pip install zappa
-        zappa update dev
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version:  '3.7'
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Migrate Database Changes
+        run: |
+          python manage.py migrate
+      - name: Run Tests
+        run: |
+          python manage.py test
+      - name: Configure AWS Credentials
+        run: |
+          mkdir -p ~/.aws
+          touch ~/.aws/credentials
+
+          echo "[default]
+          aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key = ${{ secrets.AWS_SECRET_KEY_ID }}
+          region = ${AWS_DEFAULT_REGION}" > ~/.aws/credentials
+      - name: Deploy to Lambda
+        run: |
+          pip install zappa
+          zappa update dev
