@@ -21,7 +21,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_messages(self, user):
         messages = Message.objects.filter(creator=user)
         serializer = MessageSerializer(instance=messages, many=True, context=self.context)
-        print(serializer)
         return serializer.data
 
     def get_threads(self, user):
@@ -140,6 +139,7 @@ class ThreadSpecificSerializer(serializers.ModelSerializer):
 class MessageSerializer(serializers.ModelSerializer):
     creator = serializers.SerializerMethodField('get_creator')
     status = serializers.SerializerMethodField('get_status')
+    thread = ThreadSerializer()
 
     class Meta:
         model = Message
