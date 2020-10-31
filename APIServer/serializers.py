@@ -20,7 +20,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_messages(self, user):
         messages = Message.objects.filter(creator=user)
-        serializer = MessageSerializer(instance=messages, many=True, context=self.context)
+        serializer = MessageProfileSerializer(instance=messages, many=True, context=self.context)
         return serializer.data
 
     def get_threads(self, user):
@@ -136,10 +136,37 @@ class ThreadSpecificSerializer(serializers.ModelSerializer):
         serializer = UserSerializer(instance=user)
         return serializer.data
 
-class MessageSerializer(serializers.ModelSerializer):
+class MessageProfileSerializer(serializers.ModelSerializer):
     creator = serializers.SerializerMethodField('get_creator')
     status = serializers.SerializerMethodField('get_status')
     thread = ThreadSerializer()
+
+    class Meta:
+        model = Message
+        fields = ['id', 'content', 'thread', 'upvote', 'is_correct', 'date_posted', 'creator', 'date_posted', 'reply', 'status']
+        read_only_fields = ['creator',]
+
+    def get_creator(self, message):
+        user = message.creator
+        serializer = UserSerializer(instance=user)
+        return serializer.data
+
+
+    def get_status(self, message):
+        user = self.context['request'].user
+        vote_status = VoteMessage.objects.filter(user=user, message=message)
+        if not vote_status:
+            VoteMessage.objects.create(user=user, message=message)
+            vote_status = VoteMessage.objects.filter(user=user, message=message)
+            serializer = VoteSerialzier(instance=vote_status, many=True)
+            return serializer.data
+        else:
+            serializer = VoteSerialzier(instance=vote_status, many=True)
+            return serializer.data
+
+class MessageSerializer(serializers.ModelSerializer):
+    creator = serializers.SerializerMethodField('get_creator')
+    status = serializers.SerializerMethodField('get_status')
 
     class Meta:
         model = Message
