@@ -10,6 +10,24 @@ class UserSerializer(serializers.ModelSerializer):
         model = get_user_model()
         fields = ['id', 'username', 'score', 'type']
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    messages = serializers.SerializerMethodField('get_messages')
+    threads = serializers.SerializerMethodField('get_threads')
+
+    class Meta:
+        model = get_user_model()
+        fields = ['id', 'username', 'score', 'type', 'messages', 'threads']
+
+    def get_messages(self, user):
+        messages = Message.objects.filter(creator=user)
+        serializer = MessageProfileSerializer(instance=messages, many=True, context=self.context)
+        return serializer.data
+
+    def get_threads(self, user):
+        threads = Thread.objects.filter(creator=user)
+        serializer = ThreadListSerializer(instance=threads, many=True)
+        return serializer.data
+
 
 class ForumSerializer(serializers.ModelSerializer):
     creator = serializers.SerializerMethodField('get_creator')
@@ -102,6 +120,7 @@ class ThreadSerializer(serializers.ModelSerializer):
 class ThreadSpecificSerializer(serializers.ModelSerializer):
     messages = serializers.SerializerMethodField('get_parent_messages')
     creator = serializers.SerializerMethodField(read_only=True)
+    forum = ForumSerializer()
 
     class Meta:
         model = Thread
@@ -116,6 +135,34 @@ class ThreadSpecificSerializer(serializers.ModelSerializer):
         user = thread.creator
         serializer = UserSerializer(instance=user)
         return serializer.data
+
+class MessageProfileSerializer(serializers.ModelSerializer):
+    creator = serializers.SerializerMethodField('get_creator')
+    status = serializers.SerializerMethodField('get_status')
+    thread = ThreadSerializer()
+
+    class Meta:
+        model = Message
+        fields = ['id', 'content', 'thread', 'upvote', 'is_correct', 'date_posted', 'creator', 'date_posted', 'reply', 'status']
+        read_only_fields = ['creator',]
+
+    def get_creator(self, message):
+        user = message.creator
+        serializer = UserSerializer(instance=user)
+        return serializer.data
+
+
+    def get_status(self, message):
+        user = self.context['request'].user
+        vote_status = VoteMessage.objects.filter(user=user, message=message)
+        if not vote_status:
+            VoteMessage.objects.create(user=user, message=message)
+            vote_status = VoteMessage.objects.filter(user=user, message=message)
+            serializer = VoteSerialzier(instance=vote_status, many=True)
+            return serializer.data
+        else:
+            serializer = VoteSerialzier(instance=vote_status, many=True)
+            return serializer.data
 
 class MessageSerializer(serializers.ModelSerializer):
     creator = serializers.SerializerMethodField('get_creator')

@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import generics
 
-from .serializers import UserSerializer
+from .serializers import UserSerializer, UserProfileSerializer
 
 CustomUser = get_user_model()
 
@@ -14,6 +14,10 @@ class UserList(generics.ListAPIView):
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
+
+class UserProfile(generics.RetrieveAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserProfileSerializer
 
 class UserLoggedIn(generics.ListAPIView):
     serializer_class = UserSerializer
