@@ -177,12 +177,14 @@ WSGI_APPLICATION = 'NTUConnect_backend.wsgi.application'
 if deploy_phase == DeployPhaseEnum.PROD:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': os.getenv('DATABASE_NAME', 'ntuconnect'),
-            'USER': os.getenv('DATABASE_UNAME'),
-            'PASSWORD': os.getenv('DATABASE_PWD'),
-            'HOST': os.getenv('DATABASE_HOST'),
-            'PORT': '3306'
+            'ENGINE': 'djongo',
+            'NAME': os.getenv('DATABASE_NAME', 'NTUConnectDB'),
+            'CLIENT': {
+                'username': os.getenv('DATABASE_UNAME'),
+                'password': os.getenv('DATABASE_PWD'),
+                'host': os.getenv('DATABASE_HOST'),
+                'authSource': 'admin',
+            }
         }
     }
 elif deploy_phase == DeployPhaseEnum.LOCAL:
